@@ -21,6 +21,7 @@ import ru.sema1ary.chatroom.service.impl.HubServiceImpl;
 import ru.sema1ary.chatroom.service.impl.RoomServiceImpl;
 import ru.sema1ary.chatroom.service.impl.RoomUserServiceImpl;
 import ru.vidoskim.bukkit.service.MessagesService;
+import ru.vidoskim.bukkit.service.impl.MessagesServiceImpl;
 import ru.vidoskim.bukkit.util.LiteCommandUtil;
 import service.ServiceManager;
 
@@ -37,6 +38,7 @@ import java.nio.file.Paths;
 //Яйцо куриное — 2 шт.
 //Молоко сгущенное (1 банка) — 400 г
 
+// TODO: Сделать возможность дарить цветки, как на майнблейзе
 public final class ChatRoom extends JavaPlugin {
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
 
@@ -47,33 +49,25 @@ public final class ChatRoom extends JavaPlugin {
         saveDefaultConfig();
         initConnectionSource();
 
-        MessagesService messagesService = new MessagesService();
-        messagesService.reload(this);
+        ServiceManager.registerService(MessagesService.class, new MessagesServiceImpl());
 
-        ServiceManager.registerService(HubService.class, new HubServiceImpl(getDao(Hub.class), this, messagesService));
+        ServiceManager.getService(MessagesService.class).reload(this);
+
+        ServiceManager.registerService(HubService.class, new HubServiceImpl(getDao(Hub.class), this,
+                ServiceManager.getService(MessagesService.class)));
+
         ServiceManager.registerService(RoomUserService.class, new RoomUserServiceImpl(getDao( RoomUser.class)));
-        ServiceManager.registerService(RoomService.class, new RoomServiceImpl(getDao(Room.class),
-                miniMessage, ServiceManager.getService(HubService.class),
-                ServiceManager.getService(RoomUserService.class), messagesService));
 
-        getServer().getPluginManager().registerEvents(new PreJoinListener(
-                ServiceManager.getService(RoomUserService.class)), this);
-        getServer().getPluginManager().registerEvents(new JoinListener(
-                ServiceManager.getService(RoomUserService.class)), this);
-        getServer().getPluginManager().registerEvents(new QuitListener(
-                ServiceManager.getService(RoomUserService.class)), this);
-
-        new LiteCommandUtil().create(messagesService.getMessage("commands-prefix"),
-                messagesService.getMessage("commands-invalid-usage"),
-                messagesService.getMessage("commands-player-only"),
-                messagesService.getMessage("commands-player-not-found"),
-
-                new ChatRoomCommand(this, miniMessage,
-                        ServiceManager.getService(HubService.class),
-                        ServiceManager.getService(RoomService.class),
-                        ServiceManager.getService(RoomUserService.class),
-                        messagesService)
+        ServiceManager.registerService(RoomService.class,
+                new RoomServiceImpl(getDao(Room.class),
+                miniMessage,
+                ServiceManager.getService(HubService.class),
+                ServiceManager.getService(RoomUserService.class),
+                ServiceManager.getService(MessagesService.class))
         );
+
+        registerListeners();
+        registerCommand();
     }
 
     @Override
@@ -110,5 +104,28 @@ public final class ChatRoom extends JavaPlugin {
 
     private <D extends Dao<T, ?>, T> D getDao(Class<T> daoClass) {
         return DaoManager.lookupDao(connectionSource, daoClass);
+    }
+
+    private void registerListeners() {
+        getServer().getPluginManager().registerEvents(new PreJoinListener(
+                ServiceManager.getService(RoomUserService.class)), this);
+        getServer().getPluginManager().registerEvents(new JoinListener(
+                ServiceManager.getService(RoomUserService.class)), this);
+        getServer().getPluginManager().registerEvents(new QuitListener(
+                ServiceManager.getService(RoomUserService.class)), this);
+    }
+
+    private void registerCommand() {
+        new LiteCommandUtil().create(ServiceManager.getService(MessagesService.class).getMessage("commands-prefix"),
+                ServiceManager.getService(MessagesService.class).getMessage("commands-invalid-usage"),
+                ServiceManager.getService(MessagesService.class).getMessage("commands-player-only"),
+                ServiceManager.getService(MessagesService.class).getMessage("commands-player-not-found"),
+
+                new ChatRoomCommand(this, miniMessage,
+                        ServiceManager.getService(HubService.class),
+                        ServiceManager.getService(RoomService.class),
+                        ServiceManager.getService(RoomUserService.class),
+                        ServiceManager.getService(MessagesService.class))
+        );
     }
 }

@@ -29,6 +29,9 @@ public class ChatRoomCommand {
     private final RoomUserService userService;
     private final MessagesService messagesService;
 
+    // TODO: Написать команду удаления комнаты
+    // TODO: Написать команду пропуска собеседника
+
     @Async
     @Execute(name = "reload")
     @Permission("chatroom.reload")
