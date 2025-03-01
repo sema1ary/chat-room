@@ -1,0 +1,5 @@
+name: chat-room
+version: '1.0'
+main: ru.sema1ary.chatroom.ChatRoom
+api-version: '1.20'
+authors: [ sema1ary ]
