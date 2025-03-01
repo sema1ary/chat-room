@@ -1,4 +1,4 @@
-package ru.sema1ary.chatroom.model;
+package ru.sema1ary.chatroom.model.user;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -6,7 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.sema1ary.chatroom.dao.impl.RoomDaoImpl;
+import ru.sema1ary.chatroom.dao.impl.RoomUserDaoImpl;
+import ru.sema1ary.chatroom.model.Room;
 
 @Data
 @Builder
@@ -21,5 +22,8 @@ public class RoomUser {
     private String username;
 
     @DatabaseField(canBeNull = false)
-    private boolean isReady;
+    private UserStatus status;
+
+    @DatabaseField(foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true, columnName = "in_room")
+    private Room inRoom;
 }

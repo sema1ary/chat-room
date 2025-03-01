@@ -1,0 +1,37 @@
+messages:
+  commands-prefix: 'chatroom' # /prefix:chatroom command, example: prefix = "rooms" - /rooms:chatroom command
+  commands-invalid-usage: '&cInvalid usage!'
+  commands-player-only: '&cThis command only for players!'
+  commands-player-not-found: '&cThis player dont founded.'
+
+  # Only minimessage!!! https://docs.advntr.dev/minimessage/format.html
+  successful-reload: '<green>Successful reload.'
+
+  hub-successful-set: '<green>Successful hub set.'
+
+  hub-dont-set: '<red>Error. Set the hub!'
+
+  room-successful-created: '<green>Successful creation.'
+  room-successful-found: '<green>Room found.'
+  room-error-already-exists: '<red>This room already exists.'
+
+  start-successful-queued: '<green>Successful moved you to queue.'
+  start-roommate-found: '<green>Roommate found!'
+
+  start-error-already-in-queue: '<red>You already in queue.'
+  start-error-no-rooms-available: '<red>No rooms available.'
+  start-error-already-in-room: '<red>There are no rooms available at the moment.'
+
+  stop-successful: '<green>You successful cancel queue.'
+  stop-users-message: '<red>Someone in the roommate turned off the queue, the room is closed.'
+  stop-dont-in-queue-error: '<red>You cant cancel, you are not on a queue'
+
+configuration:
+  sql:
+    # MariaDB, MySQL, PostgreSQL
+    driver: 'mariadb'
+    use: false
+    host: 'localhost:3306'
+    database: 'database'
+    user: 'user'
+    password: 'password'
