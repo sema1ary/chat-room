@@ -1,30 +1,30 @@
 messages:
   commands-prefix: 'chatroom' # /prefix:chatroom command, example: prefix = "rooms" - /rooms:chatroom command
-  commands-invalid-usage: '&cInvalid usage!'
-  commands-player-only: '&cThis command only for players!'
-  commands-player-not-found: '&cThis player dont founded.'
+  commands-invalid-usage: '&cНеверное использование!'
+  commands-player-only: '&cЭта команда только для игроков!'
+  commands-player-not-found: '&cЭтот игрок не найден.'
 
   # Only minimessage!!! https://docs.advntr.dev/minimessage/format.html
-  successful-reload: '<green>Successful reload.'
+  successful-reload: '<green>Вся локализация плагина перезапущена.'
 
-  hub-successful-set: '<green>Successful hub set.'
+  hub-successful-set: '<green>Хаб успешно установлен.'
 
-  hub-dont-set: '<red>Error. Set the hub!'
+  hub-dont-set: '<red>Хаб не установлен, без него плагин не будет работать!'
 
-  room-successful-created: '<green>Successful creation.'
-  room-successful-found: '<green>Room found.'
-  room-error-already-exists: '<red>This room already exists.'
+  room-successful-created: '<green>Успешное создание комнаты.'
+  room-successful-found: '<green>Комната для вас с собеседником найдена.'
+  room-error-already-exists: '<red>Эта комната уже существует.'
 
-  start-successful-queued: '<green>Successful moved you to queue.'
-  start-roommate-found: '<green>Roommate found!'
+  start-successful-queued: '<green>Вы успешно вошли в очередь (ожидайте).'
+  start-roommate-found: '<green>Собеседник найден!'
 
-  start-error-already-in-queue: '<red>You already in queue.'
-  start-error-no-rooms-available: '<red>No rooms available.'
-  start-error-already-in-room: '<red>There are no rooms available at the moment.'
+  start-error-already-in-queue: '<red>Вы уже в очереди.'
+  start-error-no-rooms-available: '<red>В данный момент на сервере нету свободных комнат.'
+  start-error-already-in-room: '<red>Вы уже находитесь в комнате.'
 
-  stop-successful: '<green>You successful cancel queue.'
-  stop-users-message: '<red>Someone in the roommate turned off the queue, the room is closed.'
-  stop-dont-in-queue-error: '<red>You cant cancel, you are not on a queue'
+  stop-successful: '<green>Вы успешно вышли из очереди.'
+  stop-users-message: '<red>Кто-то из собеседников отменил очередь, комната закрыта.'
+  stop-dont-in-queue-error: '<red>Вы не можете отменить. Вы не находитесь в очереди'
 
 configuration:
   sql:
