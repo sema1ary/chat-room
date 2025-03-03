@@ -73,9 +73,7 @@ public final class ChatRoom extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        ServiceManager.disableServices();
-
-        ConnectionSourceUtil.closeConnection(connectionSource);
+        ConnectionSourceUtil.closeConnection(true, connectionSource);
     }
 
     @SneakyThrows
