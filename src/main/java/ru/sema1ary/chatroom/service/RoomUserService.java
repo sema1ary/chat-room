@@ -2,6 +2,7 @@ package ru.sema1ary.chatroom.service;
 
 import lombok.NonNull;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import service.Service;
 
@@ -33,4 +34,6 @@ public interface RoomUserService extends Service {
     void teleportAsync(RoomUser user, Location location);
 
     void sendMessage(RoomUser user, String index);
+
+    void sendTitle(RoomUser user, String title, String subtitle, Sound sound);
 }

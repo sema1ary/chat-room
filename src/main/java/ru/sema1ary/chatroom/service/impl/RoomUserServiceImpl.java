@@ -4,13 +4,16 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import ru.sema1ary.chatroom.dao.RoomUserDao;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import ru.sema1ary.chatroom.model.user.UserStatus;
 import ru.sema1ary.chatroom.service.RoomUserService;
+import ru.vidoskim.bukkit.service.ConfigurationService;
 import ru.vidoskim.bukkit.service.MessagesService;
 
 import java.sql.SQLException;
@@ -21,6 +24,7 @@ public class RoomUserServiceImpl implements RoomUserService {
     private final RoomUserDao roomUserDao;
     private final MiniMessage miniMessage;
     private final MessagesService messagesService;
+    private final ConfigurationService configurationService;
 
     private final Random random = new Random();
 
@@ -140,5 +144,23 @@ public class RoomUserServiceImpl implements RoomUserService {
         }
 
         player.sendMessage(miniMessage.deserialize(PlaceholderAPI.setPlaceholders(player, messagesService.getMessage(index))));
+    }
+
+    @Override
+    public void sendTitle(RoomUser user, String titleIndex, String subtitleIndex, Sound sound) {
+        Player player = Bukkit.getPlayer(user.getUsername());
+
+        if(player == null || !player.isOnline()) {
+            return;
+        }
+
+        if(configurationService.get("enable-titles")) {
+            player.showTitle(Title.title(miniMessage.deserialize(configurationService.get(titleIndex)),
+                    miniMessage.deserialize(configurationService.get(subtitleIndex))));
+        }
+
+        if(configurationService.get("enable-titles-sound")) {
+            player.playSound(player.getLocation(), sound, 1L, 0L);
+        }
     }
 }

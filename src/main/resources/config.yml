@@ -44,6 +44,14 @@ configuration:
   sql-user: 'user'
   sql-password: 'password'
 
+  enable-titles: true
+  enable-titles-sound: true
+  start-queue-title-1: '<green>Вы запустили поиск!'
+  start-queue-title-2: '<gray>Пожалуйста ожидайте...'
+
+  stop-queue-title-1: '<red>Вы прекратили поиск.'
+  stop-queue-title-2: '<gray>Приходи еще!'
+
   enable-flower-give: true # Разрешено ли игрокам дарить друг другу цветы
   flowers-list:
     - POTTED_DANDELION

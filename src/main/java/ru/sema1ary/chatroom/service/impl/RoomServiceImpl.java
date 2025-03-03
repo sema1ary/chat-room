@@ -3,6 +3,7 @@ package ru.sema1ary.chatroom.service.impl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import ru.sema1ary.chatroom.dao.RoomDao;
 import ru.sema1ary.chatroom.model.Room;
 import ru.sema1ary.chatroom.model.user.RoomUser;
@@ -110,12 +111,14 @@ public class RoomServiceImpl implements RoomService {
             return;
         }
 
+        userService.sendMessage(user, "start-successful-queued");
+        userService.sendTitle(user, "start-queue-title-1", "start-queue-title-2", Sound.BLOCK_NOTE_BLOCK_BELL);
+
         RoomUser roommate = userService.findRoommate(user);
         if(roommate == null) {
             return;
         }
 
-        userService.sendMessage(user, "start-successful-queued");
         startRoom(availableRooms.get(0), List.of(user, roommate));
     }
 
@@ -173,6 +176,8 @@ public class RoomServiceImpl implements RoomService {
             }
 
             userService.sendMessage(roomUser, "stop-successful");
+            userService.sendTitle(roomUser, "stop-queue-title-1", "stop-queue-title-2",
+                    Sound.ENTITY_CAT_DEATH);
         });
     }
 }

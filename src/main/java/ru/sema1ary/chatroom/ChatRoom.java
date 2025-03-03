@@ -58,7 +58,8 @@ public final class ChatRoom extends JavaPlugin {
                 ServiceManager.getService(MessagesService.class)));
 
         ServiceManager.registerService(RoomUserService.class, new RoomUserServiceImpl(getDao( RoomUser.class),
-                miniMessage, ServiceManager.getService(MessagesService.class)));
+                miniMessage, ServiceManager.getService(MessagesService.class),
+                ServiceManager.getService(ConfigurationService.class)));
 
         ServiceManager.registerService(RoomService.class,
                 new RoomServiceImpl(getDao(Room.class),
