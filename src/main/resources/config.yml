@@ -27,11 +27,9 @@ messages:
   stop-dont-in-queue-error: '<red>Вы не можете отменить. Вы не находитесь в очереди'
 
 configuration:
-  sql:
-    # MariaDB, MySQL, PostgreSQL
-    driver: 'mariadb'
-    use: false
-    host: 'localhost:3306'
-    database: 'database'
-    user: 'user'
-    password: 'password'
+  sql-driver: 'mariadb' # MariaDB, MySQL, PostgreSQL
+  sql-use: false
+  sql-host: 'localhost:3306'
+  sql-database: 'database'
+  sql-user: 'user'
+  sql-password: 'password'

@@ -20,7 +20,9 @@ import ru.sema1ary.chatroom.service.RoomUserService;
 import ru.sema1ary.chatroom.service.impl.HubServiceImpl;
 import ru.sema1ary.chatroom.service.impl.RoomServiceImpl;
 import ru.sema1ary.chatroom.service.impl.RoomUserServiceImpl;
+import ru.vidoskim.bukkit.service.ConfigurationService;
 import ru.vidoskim.bukkit.service.MessagesService;
+import ru.vidoskim.bukkit.service.impl.ConfigurationServiceImpl;
 import ru.vidoskim.bukkit.service.impl.MessagesServiceImpl;
 import ru.vidoskim.bukkit.util.LiteCommandUtil;
 import service.ServiceManager;
@@ -50,6 +52,7 @@ public final class ChatRoom extends JavaPlugin {
         initConnectionSource();
 
         ServiceManager.registerService(MessagesService.class, new MessagesServiceImpl(this));
+        ServiceManager.registerService(ConfigurationService.class, new ConfigurationServiceImpl(this));
 
         ServiceManager.registerService(HubService.class, new HubServiceImpl(getDao(Hub.class), this,
                 ServiceManager.getService(MessagesService.class)));
@@ -77,8 +80,8 @@ public final class ChatRoom extends JavaPlugin {
 
     @SneakyThrows
     private void initConnectionSource() {
-        if(getConfig().getBoolean("configuration.sql.use")) {
-            initSQLConnectionSource(getConfig().getString("configuration.sql.driver"));
+        if(ServiceManager.getService(ConfigurationService.class).get("sql-use")) {
+            initSQLConnectionSource(ServiceManager.getService(ConfigurationService.class).get("sql-driver"));
             return;
         }
 
@@ -93,10 +96,10 @@ public final class ChatRoom extends JavaPlugin {
 
     private void initSQLConnectionSource(String driver) {
         connectionSource = ConnectionSourceUtil.connectSQLDatabase(driver,
-                getConfig().getString("configuration.sql.host"),
-                getConfig().getString("configuration.sql.database"),
-                getConfig().getString("configuration.sql.user"),
-                getConfig().getString("configuration.sql.password"),
+                ServiceManager.getService(ConfigurationService.class).get("sql-host"),
+                ServiceManager.getService(ConfigurationService.class).get("sql-database"),
+                ServiceManager.getService(ConfigurationService.class).get("sql-user"),
+                ServiceManager.getService(ConfigurationService.class).get("sql-password"),
                 Room.class, RoomUser.class, Hub.class);
     }
 
