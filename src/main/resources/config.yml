@@ -5,13 +5,14 @@ messages:
   commands-player-not-found: '&cЭтот игрок не найден.'
 
   # Only minimessage!!! https://docs.advntr.dev/minimessage/format.html
-  successful-reload: '<green>Вся локализация плагина перезапущена.'
+  successful-reload: '<green>Плагин успешно перезапущен.'
 
   hub-successful-set: '<green>Хаб успешно установлен.'
 
   hub-dont-set: '<red>Хаб не установлен, без него плагин не будет работать!'
 
   room-successful-created: '<green>Успешное создание комнаты.'
+  room-successful-deleted: '<green>Вы успешно удалили комнату.'
   room-successful-found: '<green>Комната для вас с собеседником найдена.'
   room-error-already-exists: '<red>Эта комната уже существует.'
 
@@ -22,9 +23,18 @@ messages:
   start-error-no-rooms-available: '<red>В данный момент на сервере нету свободных комнат.'
   start-error-already-in-room: '<red>Вы уже находитесь в комнате.'
 
+  skip-successful: '<red>Кто-то из собеседников пропустил комнату, возвращение к поиску.'
+
   stop-successful: '<green>Вы успешно вышли из очереди.'
-  stop-users-message: '<red>Кто-то из собеседников отменил очередь, комната закрыта.'
-  stop-dont-in-queue-error: '<red>Вы не можете отменить. Вы не находитесь в очереди'
+  stop-roommate-message: '<red>Собеседник отменил очередь, комната закрыта.'
+  stop-dont-in-queue-error: '<red>Эту команду можно использовать только находясь в комнате/очереди.'
+
+  flower-gift: '<green>Вы успешно подарили собеседнику цветок.'
+  flower-gift-target: '<green>Собеседник подарил вам цветок.'
+  flower-pickup: '<green>Вы успешно подняли цветок. Подарите его своему собеседнику!'
+
+  flower-limit-error: '<red>Вы не можете взять больше 1 цветка одинакового вида!'
+  flower-target-already-have-flower: '<red>У собеседника уже есть данный цветок!'
 
 configuration:
   sql-driver: 'mariadb' # MariaDB, MySQL, PostgreSQL
@@ -33,3 +43,20 @@ configuration:
   sql-database: 'database'
   sql-user: 'user'
   sql-password: 'password'
+
+  enable-flower-give: true # Разрешено ли игрокам дарить друг другу цветы
+  flowers-list:
+    - POTTED_DANDELION
+    - POTTED_POPPY
+    - POTTED_BLUE_ORCHID
+    - POTTED_ALLIUM
+    - POTTED_AZURE_BLUET
+    - POTTED_RED_TULIP
+    - POTTED_ORANGE_TULIP
+    - POTTED_PINK_TULIP
+    - POTTED_OXEYE_DAISY
+    - POTTED_CORNFLOWER
+    - POTTED_LILY_OF_THE_VALLEY
+    - POTTED_WITHER_ROSE
+    - POTTED_SUNFLOWER
+    - POTTED_LILAC

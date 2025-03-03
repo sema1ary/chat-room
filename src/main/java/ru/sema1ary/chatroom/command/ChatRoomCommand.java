@@ -16,7 +16,11 @@ import ru.sema1ary.chatroom.model.user.UserStatus;
 import ru.sema1ary.chatroom.service.HubService;
 import ru.sema1ary.chatroom.service.RoomService;
 import ru.sema1ary.chatroom.service.RoomUserService;
+import ru.sema1ary.chatroom.util.LocationUtil;
+import ru.vidoskim.bukkit.service.ConfigurationService;
 import ru.vidoskim.bukkit.service.MessagesService;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Command(name = "chatroom")
@@ -26,15 +30,14 @@ public class ChatRoomCommand {
     private final RoomService roomService;
     private final RoomUserService userService;
     private final MessagesService messagesService;
-
-    // TODO: Написать команду удаления комнаты
-    // TODO: Написать команду пропуска собеседника
+    private final ConfigurationService configurationService;
 
     @Async
     @Execute(name = "reload")
     @Permission("chatroom.reload")
     void reload(@Context CommandSender sender) {
         messagesService.reload();
+        configurationService.reload();
         sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("successful-reload")));
     }
 
@@ -42,13 +45,27 @@ public class ChatRoomCommand {
     @Execute(name = "create")
     @Permission("chatroom.create")
     void create(@Context Player sender, @Arg("название") String name) {
-        if(roomService.getRoomFromMap(name) != null) {
+        Optional<Room> optionalRoom = roomService.findByName(name);
+
+        if(optionalRoom.isPresent()) {
             sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("room-error-already-exists")));
             return;
         }
 
-        roomService.createRoom(name, sender.getLocation());
+        roomService.save(Room.builder()
+                .name(name)
+                .isAvailable(true)
+                .location(LocationUtil.locationToString(sender.getLocation()))
+                .build());
         sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("room-successful-created")));
+    }
+
+    @Async
+    @Execute(name = "delete", aliases = {"remove", "del"})
+    @Permission("chatroom.delete")
+    void delete(@Context CommandSender sender, @Arg("комната") Room room) {
+        roomService.delete(room);
+        sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("room-successful-deleted")));
     }
 
     @Async
@@ -63,63 +80,44 @@ public class ChatRoomCommand {
     @Execute(name = "start")
     @Permission("chatroom.start")
     void start(@Context Player sender) {
-        RoomUser user = userService.getUserFromMap(sender.getName());
-        if(user.getStatus().equals(UserStatus.QUEUE)) {
-            sender.sendMessage(miniMessage.deserialize(messagesService
-                    .getMessage("start-error-already-in-queue")));
+        RoomUser user = userService.getUser(sender.getName());
+        roomService.findRoom(user);
+    }
+
+    @Async
+    @Execute(name = "skip")
+    @Permission("chatroom.skip")
+    void skip(@Context Player sender) {
+        Room room = userService.getUser(sender.getName()).getInRoom();
+
+        if(room == null) {
+            sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("stop-dont-in-queue-error")));
             return;
         }
 
-        if (user.getStatus().equals(UserStatus.BUSY)) {
-            sender.sendMessage(miniMessage.deserialize(messagesService
-                    .getMessage("start-error-already-in-room")));
-            return;
-        }
-
-        user.setStatus(UserStatus.QUEUE);
-        userService.save(user);
-        sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("start-successful-queued")));
-
-        Player roommate = userService.findRoommate(sender);
-
-        if(roommate == null || !roommate.isOnline()) {
-            return;
-        }
-
-        sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("start-roommate-found")));
-        roommate.sendMessage(miniMessage.deserialize(messagesService.getMessage("start-roommate-found")));
-
-        if(!roomService.startRoom(sender, roommate)) {
-            sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("start-error-no-rooms-available")));
-            return;
-        }
-
-        sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("room-successful-found")));
+        roomService.stopRoom(room);
     }
 
     @Async
     @Execute(name = "stop")
     @Permission("chatroom.stop")
     void stop(@Context Player sender) {
-        RoomUser user = userService.getUserFromMap(sender.getName());
-        if(user.getStatus().equals(UserStatus.FREE)) {
-            sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("stop-dont-in-queue-error")));
-            return;
-        }
+        RoomUser user = userService.getUser(sender.getName());
 
         if(user.getStatus().equals(UserStatus.QUEUE)) {
             user.setStatus(UserStatus.FREE);
             userService.save(user);
-            hubService.teleportToHub(sender);
             sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("stop-successful")));
             return;
         }
 
         Room room = user.getInRoom();
-        roomService.stopRoom(room);
 
-        user.setStatus(UserStatus.FREE);
-        userService.save(user);
-        sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("stop-successful")));
+        if(room == null) {
+            sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("stop-dont-in-queue-error")));
+            return;
+        }
+
+        roomService.cancelRoom(user, room);
     }
 }

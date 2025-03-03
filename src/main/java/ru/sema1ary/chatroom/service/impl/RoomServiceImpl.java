@@ -26,11 +26,13 @@ public class RoomServiceImpl implements RoomService {
     private final HubService hubService;
     private final RoomUserService userService;
     private final MessagesService messagesService;
-    private final Map<String, Room> roomMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     @Override
-    public void enable() {
-        findAll().forEach(this::registerRoom);
+    public void disable() {
+        findAll().forEach(room -> {
+            room.setAvailable(true);
+            save(room);
+        });
     }
 
     @Override
@@ -79,88 +81,121 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Room createRoom(@NonNull String name, Location location) {
-        return registerRoom(
-                save(Room.builder()
-                        .name(name)
-                        .location(LocationUtil.locationToString(location))
-                        .isAvailable(true)
-                        .build())
-        );
-    }
-
-    @Override
-    public Room registerRoom(@NonNull Room room) {
-        return roomMap.put(room.getName(), room);
-    }
-
-    @Override
-    public Room getRoomFromMap(@NonNull String name) {
-        return roomMap.get(name);
+    public void delete(Room room) {
+        try {
+            roomDao.delete(room);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public List<Room> getAvailableRooms() {
-        List<Room> availableRooms = new ArrayList<>();
-        roomMap.forEach((string, room) -> {
-            if(getRoomFromMap(string).isAvailable()) {
-                availableRooms.add(room);
+        return findAll().stream().filter(Room::isAvailable).toList();
+    }
+
+    @Override
+    public void findRoom(@NonNull RoomUser user) {
+        switch (user.getStatus()) {
+            case QUEUE -> {
+                sendMessage(user, "start-error-already-in-queue");
+                return;
             }
-        });
-
-        return availableRooms;
-    }
-
-    @Override
-    public void unregisterRoom(@NonNull String name) {
-        roomMap.remove(name);
-    }
-
-    @Override
-    public boolean startRoom(@NonNull Player one, @NonNull Player two) {
-        List<Room> availableRooms = getAvailableRooms();
-        if(availableRooms.isEmpty()) {
-            return false;
+            case BUSY -> {
+                sendMessage(user, "start-error-already-in-room");
+                return;
+            }
         }
 
-        Room room = availableRooms.get(0);
-        Location roomLocation = LocationUtil.stringToLocation(room.getLocation());
+        user.setStatus(UserStatus.QUEUE);
+        userService.save(user);
+
+        List<Room> availableRooms = getAvailableRooms();
+        if(availableRooms.isEmpty()) {
+            sendMessage(user, "start-error-no-rooms-available");
+            return;
+        }
+
+        RoomUser roommate = userService.findRoommate(user);
+        if(roommate == null) {
+            return;
+        }
+
+        sendMessage(user, "start-successful-queued");
+        startRoom(availableRooms.get(0), List.of(user, roommate));
+    }
+
+    @Override
+    public void startRoom(@NonNull Room room, @NonNull List<RoomUser> users) {
         room.setAvailable(false);
         save(room);
 
-        one.teleportAsync(roomLocation);
-        two.teleportAsync(roomLocation);
+        Location roomLocation = LocationUtil.stringToLocation(room.getLocation());
 
-        RoomUser oneUser = userService.getUserFromMap(one.getName());
-        RoomUser twoUser = userService.getUserFromMap(two.getName());
+        users.forEach(user -> {
+            user.setInRoom(room);
+            user.setStatus(UserStatus.BUSY);
 
-        oneUser.setInRoom(room);
-        twoUser.setInRoom(room);
-        oneUser.setStatus(UserStatus.BUSY);
-        twoUser.setStatus(UserStatus.BUSY);
+            sendMessage(user, "room-successful-found");
+            teleportAsync(user, roomLocation);
 
-        userService.saveAll(List.of(oneUser, twoUser));
-        return true;
+            userService.save(user);
+        });
     }
 
     @Override
     public void stopRoom(@NonNull Room room) {
+        room.setAvailable(true);
+        save(room);
+
         room.getUsers().forEach(user -> {
+            user.setStatus(UserStatus.FREE);
             user.setInRoom(null);
-            user.setStatus(UserStatus.QUEUE);
             userService.save(user);
 
-            Player player = Bukkit.getPlayer(user.getUsername());
+            hubService.teleportToHub(user);
 
-            if(player == null || !player.isOnline()) {
+            sendMessage(user, "skip-successful");
+            findRoom(user);
+        });
+    }
+
+    @Override
+    public void cancelRoom(@NonNull RoomUser user, @NonNull Room room) {
+        room.setAvailable(true);
+        save(room);
+
+        room.getUsers().forEach(roomUser -> {
+            roomUser.setStatus(UserStatus.FREE);
+            roomUser.setInRoom(null);
+            userService.save(roomUser);
+
+            hubService.teleportToHub(roomUser);
+
+            if(!user.getUsername().equals(roomUser.getUsername())) {
+                sendMessage(roomUser, "stop-roommate-message");
+                findRoom(roomUser);
                 return;
             }
 
-            player.sendMessage(miniMessage.deserialize(messagesService.getMessage("stop-users-message")));
-            hubService.teleportToHub(Bukkit.getPlayer(user.getUsername()));
+            sendMessage(roomUser, "stop-successful");
         });
+    }
 
-        room.setAvailable(true);
-        save(room);
+    private void teleportAsync(RoomUser user, Location location) {
+        Player player = Bukkit.getPlayer(user.getUsername());
+        if(player != null && player.isOnline()) {
+            player.teleportAsync(location);
+        }
+    }
+
+    private void sendMessage(RoomUser user, String index) {
+        Player player = Bukkit.getPlayer(user.getUsername());
+
+        if(player == null || !player.isOnline()) {
+            return;
+        }
+
+        player.sendMessage(miniMessage.deserialize(messagesService.getMessage(index)));
     }
 }

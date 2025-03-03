@@ -2,8 +2,6 @@ package ru.sema1ary.chatroom.service.impl;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import ru.sema1ary.chatroom.dao.RoomUserDao;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import ru.sema1ary.chatroom.model.user.UserStatus;
@@ -17,11 +15,15 @@ public class RoomUserServiceImpl implements RoomUserService {
     private final RoomUserDao roomUserDao;
 
     private final Random random = new Random();
-    private final Map<String, RoomUser> userMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     @Override
     public void disable() {
-        userMap.forEach((string, user) -> {
+        getUsersInQueue().forEach(user -> {
+            user.setStatus(UserStatus.FREE);
+            save(user);
+        });
+
+        getBusyUsers().forEach(user -> {
             user.setStatus(UserStatus.FREE);
             user.setInRoom(null);
             save(user);
@@ -82,21 +84,6 @@ public class RoomUserServiceImpl implements RoomUserService {
     }
 
     @Override
-    public RoomUser registerUser(@NonNull String name) {
-        return userMap.put(name, getUser(name));
-    }
-
-    @Override
-    public RoomUser getUserFromMap(@NonNull String name) {
-        return userMap.get(name);
-    }
-
-    @Override
-    public void unregisterUser(@NonNull String name) {
-        userMap.remove(name);
-    }
-
-    @Override
     public List<RoomUser> getFreeUsers() {
         return findAll().stream().filter(roomUser -> roomUser.getStatus().equals(UserStatus.FREE)).toList();
     }
@@ -112,11 +99,11 @@ public class RoomUserServiceImpl implements RoomUserService {
     }
 
     @Override
-    public Player findRoommate(Player sender) {
+    public RoomUser findRoommate(RoomUser user) {
         List<RoomUser> availableRoommates = new ArrayList<>();
 
         getUsersInQueue().forEach(roomUser -> {
-            if(!roomUser.getUsername().equals(sender.getName())) {
+            if(!roomUser.getUsername().equals(user.getUsername())) {
                 availableRoommates.add(roomUser);
             }
         });
@@ -125,7 +112,6 @@ public class RoomUserServiceImpl implements RoomUserService {
             return null;
         }
 
-        RoomUser roommateUser = availableRoommates.get(random.nextInt(availableRoommates.size()));
-        return Bukkit.getPlayer(roommateUser.getUsername());
+        return availableRoommates.get(random.nextInt(availableRoommates.size()));
     }
 }

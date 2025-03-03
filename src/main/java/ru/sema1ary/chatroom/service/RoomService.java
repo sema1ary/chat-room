@@ -1,9 +1,8 @@
 package ru.sema1ary.chatroom.service;
 
 import lombok.NonNull;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import ru.sema1ary.chatroom.model.Room;
+import ru.sema1ary.chatroom.model.user.RoomUser;
 import service.Service;
 
 import java.util.List;
@@ -21,17 +20,15 @@ public interface RoomService extends Service {
 
     List<Room> findAll();
 
-    Room createRoom(@NonNull String name, Location location);
-
-    Room registerRoom(@NonNull Room room);
-
-    Room getRoomFromMap(@NonNull String name);
+    void delete(Room room);
 
     List<Room> getAvailableRooms();
 
-    void unregisterRoom(@NonNull String name);
+    void findRoom(@NonNull RoomUser user);
 
-    boolean startRoom(@NonNull Player one, @NonNull Player two);
+    void startRoom(@NonNull Room room, @NonNull List<RoomUser> users);
 
     void stopRoom(@NonNull Room room);
+
+    void cancelRoom(@NonNull RoomUser user, @NonNull Room room);
 }

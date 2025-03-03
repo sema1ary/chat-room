@@ -1,7 +1,6 @@
 package ru.sema1ary.chatroom.service;
 
 import lombok.NonNull;
-import org.bukkit.entity.Player;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import service.Service;
 
@@ -22,17 +21,11 @@ public interface RoomUserService extends Service {
 
     RoomUser getUser(@NonNull String name);
 
-    RoomUser registerUser(@NonNull String name);
-
-    RoomUser getUserFromMap(@NonNull String name);
-
-    void unregisterUser(@NonNull String name);
-
     List<RoomUser> getFreeUsers();
 
     List<RoomUser> getUsersInQueue();
 
     List<RoomUser> getBusyUsers();
 
-    Player findRoommate(Player sender);
+    RoomUser findRoommate(RoomUser sender);
 }

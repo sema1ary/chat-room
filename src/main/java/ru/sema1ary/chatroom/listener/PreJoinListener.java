@@ -13,16 +13,16 @@ public class PreJoinListener implements Listener {
     private final RoomUserService userService;
 
     @EventHandler
-    private void onJoin(AsyncPlayerPreLoginEvent event) {
-        String username = event.getName();
+    private void onPreJoin(AsyncPlayerPreLoginEvent event) {
+        String name = event.getName();
 
-        if(username.isEmpty()) {
+        if(name.isEmpty()) {
             return;
         }
 
-        if(userService.findByUsername(username).isEmpty()) {
+        if(userService.findByUsername(name).isEmpty()) {
             userService.save(RoomUser.builder()
-                    .username(username)
+                    .username(name)
                     .status(UserStatus.FREE)
                     .build());
         }
