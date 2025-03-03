@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import ru.sema1ary.chatroom.ChatRoom;
 import ru.sema1ary.chatroom.model.Room;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import ru.sema1ary.chatroom.model.user.UserStatus;
@@ -22,7 +21,6 @@ import ru.vidoskim.bukkit.service.MessagesService;
 @RequiredArgsConstructor
 @Command(name = "chatroom")
 public class ChatRoomCommand {
-    private final ChatRoom plugin;
     private final MiniMessage miniMessage;
     private final HubService hubService;
     private final RoomService roomService;
@@ -36,7 +34,7 @@ public class ChatRoomCommand {
     @Execute(name = "reload")
     @Permission("chatroom.reload")
     void reload(@Context CommandSender sender) {
-        messagesService.reload(plugin);
+        messagesService.reload();
         sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("successful-reload")));
     }
 

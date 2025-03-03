@@ -49,9 +49,7 @@ public final class ChatRoom extends JavaPlugin {
         saveDefaultConfig();
         initConnectionSource();
 
-        ServiceManager.registerService(MessagesService.class, new MessagesServiceImpl());
-
-        ServiceManager.getService(MessagesService.class).reload(this);
+        ServiceManager.registerService(MessagesService.class, new MessagesServiceImpl(this));
 
         ServiceManager.registerService(HubService.class, new HubServiceImpl(getDao(Hub.class), this,
                 ServiceManager.getService(MessagesService.class)));
@@ -121,7 +119,7 @@ public final class ChatRoom extends JavaPlugin {
                 ServiceManager.getService(MessagesService.class).getMessage("commands-player-only"),
                 ServiceManager.getService(MessagesService.class).getMessage("commands-player-not-found"),
 
-                new ChatRoomCommand(this, miniMessage,
+                new ChatRoomCommand(miniMessage,
                         ServiceManager.getService(HubService.class),
                         ServiceManager.getService(RoomService.class),
                         ServiceManager.getService(RoomUserService.class),
