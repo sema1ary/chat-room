@@ -2,10 +2,16 @@ package ru.sema1ary.chatroom.service.impl;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import me.clip.placeholderapi.PlaceholderAPI;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import ru.sema1ary.chatroom.dao.RoomUserDao;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import ru.sema1ary.chatroom.model.user.UserStatus;
 import ru.sema1ary.chatroom.service.RoomUserService;
+import ru.vidoskim.bukkit.service.MessagesService;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -13,6 +19,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RoomUserServiceImpl implements RoomUserService {
     private final RoomUserDao roomUserDao;
+    private final MiniMessage miniMessage;
+    private final MessagesService messagesService;
 
     private final Random random = new Random();
 
@@ -113,5 +121,24 @@ public class RoomUserServiceImpl implements RoomUserService {
         }
 
         return availableRoommates.get(random.nextInt(availableRoommates.size()));
+    }
+
+    @Override
+    public void teleportAsync(RoomUser user, Location location) {
+        Player player = Bukkit.getPlayer(user.getUsername());
+        if(player != null && player.isOnline()) {
+            player.teleportAsync(location);
+        }
+    }
+
+    @Override
+    public void sendMessage(RoomUser user, String index) {
+        Player player = Bukkit.getPlayer(user.getUsername());
+
+        if(player == null || !player.isOnline()) {
+            return;
+        }
+
+        player.sendMessage(miniMessage.deserialize(PlaceholderAPI.setPlaceholders(player, messagesService.getMessage(index))));
     }
 }

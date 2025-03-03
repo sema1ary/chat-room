@@ -47,8 +47,10 @@ public class ChatRoomCommand {
     void create(@Context Player sender, @Arg("название") String name) {
         Optional<Room> optionalRoom = roomService.findByName(name);
 
+        RoomUser user = userService.getUser(sender.getName());
+
         if(optionalRoom.isPresent()) {
-            sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("room-error-already-exists")));
+            userService.sendMessage(user, "room-error-already-exists");
             return;
         }
 
@@ -57,7 +59,8 @@ public class ChatRoomCommand {
                 .isAvailable(true)
                 .location(LocationUtil.locationToString(sender.getLocation()))
                 .build());
-        sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("room-successful-created")));
+
+        userService.sendMessage(user, "room-successful-created");
     }
 
     @Async
@@ -65,7 +68,7 @@ public class ChatRoomCommand {
     @Permission("chatroom.delete")
     void delete(@Context CommandSender sender, @Arg("комната") Room room) {
         roomService.delete(room);
-        sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("room-successful-deleted")));
+        userService.sendMessage(userService.getUser(sender.getName()), "room-successful-deleted");
     }
 
     @Async
@@ -73,7 +76,7 @@ public class ChatRoomCommand {
     @Permission("chatroom.sethub")
     void setHub(@Context Player sender) {
         hubService.setHub(sender.getLocation());
-        sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("hub-successful-set")));
+        userService.sendMessage(userService.getUser(sender.getName()), "hub-successful-set");
     }
 
     @Async
@@ -88,10 +91,11 @@ public class ChatRoomCommand {
     @Execute(name = "skip")
     @Permission("chatroom.skip")
     void skip(@Context Player sender) {
-        Room room = userService.getUser(sender.getName()).getInRoom();
+        RoomUser user = userService.getUser(sender.getName());
+        Room room = user.getInRoom();
 
         if(room == null) {
-            sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("stop-dont-in-queue-error")));
+            userService.sendMessage(user, "stop-dont-in-queue-error");
             return;
         }
 
@@ -107,14 +111,14 @@ public class ChatRoomCommand {
         if(user.getStatus().equals(UserStatus.QUEUE)) {
             user.setStatus(UserStatus.FREE);
             userService.save(user);
-            sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("stop-successful")));
+            userService.sendMessage(user, "stop-successful");
             return;
         }
 
         Room room = user.getInRoom();
 
         if(room == null) {
-            sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("stop-dont-in-queue-error")));
+            userService.sendMessage(user, "stop-dont-in-queue-error");
             return;
         }
 

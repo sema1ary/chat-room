@@ -13,6 +13,7 @@ import ru.sema1ary.chatroom.listener.flower.FlowerListener;
 import ru.sema1ary.chatroom.model.Hub;
 import ru.sema1ary.chatroom.model.Room;
 import ru.sema1ary.chatroom.model.user.RoomUser;
+import ru.sema1ary.chatroom.placeholder.RoomPlaceholder;
 import ru.sema1ary.chatroom.service.HubService;
 import ru.sema1ary.chatroom.service.RoomService;
 import ru.sema1ary.chatroom.service.RoomUserService;
@@ -56,18 +57,24 @@ public final class ChatRoom extends JavaPlugin {
         ServiceManager.registerService(HubService.class, new HubServiceImpl(getDao(Hub.class), this,
                 ServiceManager.getService(MessagesService.class)));
 
-        ServiceManager.registerService(RoomUserService.class, new RoomUserServiceImpl(getDao( RoomUser.class)));
+        ServiceManager.registerService(RoomUserService.class, new RoomUserServiceImpl(getDao( RoomUser.class),
+                miniMessage, ServiceManager.getService(MessagesService.class)));
 
         ServiceManager.registerService(RoomService.class,
                 new RoomServiceImpl(getDao(Room.class),
-                miniMessage,
                 ServiceManager.getService(HubService.class),
-                ServiceManager.getService(RoomUserService.class),
-                ServiceManager.getService(MessagesService.class))
+                ServiceManager.getService(RoomUserService.class))
         );
 
         registerListeners();
         registerCommand();
+
+        if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new RoomPlaceholder(ServiceManager.getService(RoomUserService.class)).register();
+            getLogger().info("Successful PlaceholderAPI hook!");
+        } else {
+            getLogger().warning("Where PlaceholderAPI? Hook failed.");
+        }
     }
 
     @Override

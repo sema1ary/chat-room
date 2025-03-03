@@ -1,6 +1,7 @@
 package ru.sema1ary.chatroom.service;
 
 import lombok.NonNull;
+import org.bukkit.Location;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import service.Service;
 
@@ -28,4 +29,8 @@ public interface RoomUserService extends Service {
     List<RoomUser> getBusyUsers();
 
     RoomUser findRoommate(RoomUser sender);
+
+    void teleportAsync(RoomUser user, Location location);
+
+    void sendMessage(RoomUser user, String index);
 }

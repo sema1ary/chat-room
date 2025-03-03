@@ -2,10 +2,7 @@ package ru.sema1ary.chatroom.service.impl;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import ru.sema1ary.chatroom.dao.RoomDao;
 import ru.sema1ary.chatroom.model.Room;
 import ru.sema1ary.chatroom.model.user.RoomUser;
@@ -14,7 +11,6 @@ import ru.sema1ary.chatroom.service.HubService;
 import ru.sema1ary.chatroom.service.RoomService;
 import ru.sema1ary.chatroom.service.RoomUserService;
 import ru.sema1ary.chatroom.util.LocationUtil;
-import ru.vidoskim.bukkit.service.MessagesService;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -22,10 +18,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
     private final RoomDao roomDao;
-    private final MiniMessage miniMessage;
     private final HubService hubService;
     private final RoomUserService userService;
-    private final MessagesService messagesService;
 
     @Override
     public void disable() {
@@ -98,11 +92,11 @@ public class RoomServiceImpl implements RoomService {
     public void findRoom(@NonNull RoomUser user) {
         switch (user.getStatus()) {
             case QUEUE -> {
-                sendMessage(user, "start-error-already-in-queue");
+                userService.sendMessage(user, "start-error-already-in-queue");
                 return;
             }
             case BUSY -> {
-                sendMessage(user, "start-error-already-in-room");
+                userService.sendMessage(user, "start-error-already-in-room");
                 return;
             }
         }
@@ -112,7 +106,7 @@ public class RoomServiceImpl implements RoomService {
 
         List<Room> availableRooms = getAvailableRooms();
         if(availableRooms.isEmpty()) {
-            sendMessage(user, "start-error-no-rooms-available");
+            userService.sendMessage(user, "start-error-no-rooms-available");
             return;
         }
 
@@ -121,7 +115,7 @@ public class RoomServiceImpl implements RoomService {
             return;
         }
 
-        sendMessage(user, "start-successful-queued");
+        userService.sendMessage(user, "start-successful-queued");
         startRoom(availableRooms.get(0), List.of(user, roommate));
     }
 
@@ -136,8 +130,8 @@ public class RoomServiceImpl implements RoomService {
             user.setInRoom(room);
             user.setStatus(UserStatus.BUSY);
 
-            sendMessage(user, "room-successful-found");
-            teleportAsync(user, roomLocation);
+            userService.sendMessage(user, "room-successful-found");
+            userService.teleportAsync(user, roomLocation);
 
             userService.save(user);
         });
@@ -155,7 +149,7 @@ public class RoomServiceImpl implements RoomService {
 
             hubService.teleportToHub(user);
 
-            sendMessage(user, "skip-successful");
+            userService.sendMessage(user, "skip-successful");
             findRoom(user);
         });
     }
@@ -173,29 +167,12 @@ public class RoomServiceImpl implements RoomService {
             hubService.teleportToHub(roomUser);
 
             if(!user.getUsername().equals(roomUser.getUsername())) {
-                sendMessage(roomUser, "stop-roommate-message");
+                userService.sendMessage(roomUser, "stop-roommate-message");
                 findRoom(roomUser);
                 return;
             }
 
-            sendMessage(roomUser, "stop-successful");
+            userService.sendMessage(roomUser, "stop-successful");
         });
-    }
-
-    private void teleportAsync(RoomUser user, Location location) {
-        Player player = Bukkit.getPlayer(user.getUsername());
-        if(player != null && player.isOnline()) {
-            player.teleportAsync(location);
-        }
-    }
-
-    private void sendMessage(RoomUser user, String index) {
-        Player player = Bukkit.getPlayer(user.getUsername());
-
-        if(player == null || !player.isOnline()) {
-            return;
-        }
-
-        player.sendMessage(miniMessage.deserialize(messagesService.getMessage(index)));
     }
 }

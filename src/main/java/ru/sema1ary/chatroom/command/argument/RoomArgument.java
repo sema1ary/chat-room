@@ -22,7 +22,6 @@ public class RoomArgument extends ArgumentResolver<CommandSender, Room> {
         Optional<Room> optionalRoom = roomService.findByName(s);
 
         return optionalRoom.map(ParseResult::success).orElseGet(() -> ParseResult.failure("Room not found"));
-
     }
 
     @Override
