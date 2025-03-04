@@ -94,7 +94,7 @@ public class ChatRoomCommand {
         RoomUser user = userService.getUser(sender.getName());
         Room room = user.getInRoom();
 
-        if(room == null) {
+        if(!userService.isInRoom(user)) {
             userService.sendMessage(user, "stop-dont-in-queue-error");
             return;
         }
@@ -117,7 +117,7 @@ public class ChatRoomCommand {
 
         Room room = user.getInRoom();
 
-        if(room == null) {
+        if(!userService.isInRoom(user)) {
             userService.sendMessage(user, "stop-dont-in-queue-error");
             return;
         }

@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import ru.sema1ary.chatroom.dao.RoomUserDao;
+import ru.sema1ary.chatroom.model.Room;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import ru.sema1ary.chatroom.model.user.UserStatus;
 import ru.sema1ary.chatroom.service.RoomUserService;
@@ -111,6 +112,11 @@ public class RoomUserServiceImpl implements RoomUserService {
     }
 
     @Override
+    public boolean isInRoom(RoomUser user) {
+        return user.getInRoom() != null;
+    }
+
+    @Override
     public RoomUser findRoommate(RoomUser user) {
         List<RoomUser> availableRoommates = new ArrayList<>();
 
@@ -125,6 +131,20 @@ public class RoomUserServiceImpl implements RoomUserService {
         }
 
         return availableRoommates.get(random.nextInt(availableRoommates.size()));
+    }
+
+    @Override
+    public RoomUser getRoommate(RoomUser user) {
+        if(!isInRoom(user)) {
+            return null;
+        }
+
+        Room room = user.getInRoom();
+        Optional<RoomUser> optionalUser = room.getUsers().stream().filter(roomUser -> !roomUser.getUsername()
+                .equalsIgnoreCase(user.getUsername())).findFirst();
+
+        return optionalUser.orElse(null);
+
     }
 
     @Override

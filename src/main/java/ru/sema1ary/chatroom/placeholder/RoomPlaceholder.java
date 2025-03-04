@@ -43,11 +43,7 @@ public class RoomPlaceholder extends PlaceholderExpansion {
         RoomUser user = userService.getUser(player.getName());
 
         if(params.equalsIgnoreCase("is_in_room")) {
-            if(user.getInRoom() == null) {
-                return "false";
-            }
-
-            return "true";
+            return String.valueOf(userService.isInRoom(user));
         }
 
         if(params.equalsIgnoreCase("player_room")) {

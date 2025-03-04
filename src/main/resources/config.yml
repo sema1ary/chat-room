@@ -36,6 +36,10 @@ messages:
   flower-limit-error: '<red>Вы не можете взять больше 1 цветка одинакового вида!'
   flower-target-already-have-flower: '<red>У собеседника уже есть данный цветок!'
 
+  chat-format: '<dark_gray>{sender}: '
+  self-chat-format: '<gray>{sender}: '
+  chat-error-only-in-room: '<red>Чат доступен только в комнате.'
+
 configuration:
   sql-driver: 'mariadb' # MariaDB, MySQL, PostgreSQL
   sql-use: false

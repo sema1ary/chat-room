@@ -29,7 +29,11 @@ public interface RoomUserService extends Service {
 
     List<RoomUser> getBusyUsers();
 
+    boolean isInRoom(RoomUser user);
+
     RoomUser findRoommate(RoomUser sender);
+
+    RoomUser getRoommate(RoomUser user);
 
     void teleportAsync(RoomUser user, Location location);
 
