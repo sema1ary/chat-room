@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import ormlite.ConnectionSourceUtil;
 import ru.sema1ary.chatroom.command.ChatRoomCommand;
 import ru.sema1ary.chatroom.listener.ChatListener;
+import ru.sema1ary.chatroom.listener.JoinListener;
 import ru.sema1ary.chatroom.listener.PreJoinListener;
 import ru.sema1ary.chatroom.listener.flower.FlowerListener;
 import ru.sema1ary.chatroom.model.Hub;
@@ -118,6 +119,8 @@ public final class ChatRoom extends JavaPlugin {
                 ServiceManager.getService(MessagesService.class)), this);
         getServer().getPluginManager().registerEvents(new FlowerListener(miniMessage,
                 ServiceManager.getService(MessagesService.class),
+                ServiceManager.getService(ConfigurationService.class)), this);
+        getServer().getPluginManager().registerEvents(new JoinListener(miniMessage,
                 ServiceManager.getService(ConfigurationService.class)), this);
     }
 

@@ -56,6 +56,9 @@ configuration:
   stop-queue-title-1: '<red>Вы прекратили поиск.'
   stop-queue-title-2: '<gray>Приходи еще!'
 
+  should-hide-player-nicks: true
+  playerlist-name: '<gray>Незнакомец'
+
   enable-flower-give: true # Разрешено ли игрокам дарить друг другу цветы
   flowers-list:
     - POTTED_DANDELION
