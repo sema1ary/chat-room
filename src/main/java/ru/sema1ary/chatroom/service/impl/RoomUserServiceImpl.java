@@ -188,24 +188,29 @@ public class RoomUserServiceImpl implements RoomUserService {
 
     @Override
     public void hidePlayers(RoomUser user) {
-        Player player = Bukkit.getPlayer(user.getUsername());
+        if(configurationService.get("should-hide-player-nicks")) {
+            Player player = Bukkit.getPlayer(user.getUsername());
 
-        if(player == null || !player.isOnline()) {
-            return;
+            if(player == null || !player.isOnline()) {
+                return;
+            }
+
+            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> player.hidePlayer(plugin, onlinePlayer));
+            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> onlinePlayer.hidePlayer(plugin, player));
         }
-
-        Bukkit.getOnlinePlayers().forEach(onlinePlayer -> player.hidePlayer(plugin, onlinePlayer));
     }
 
     @Override
     public void showPlayer(RoomUser user, RoomUser roommate) {
-        Player player = Bukkit.getPlayer(user.getUsername());
-        Player roommatePlayer = Bukkit.getPlayer(roommate.getUsername());
+        if(configurationService.get("should-hide-player-nicks")) {
+            Player player = Bukkit.getPlayer(user.getUsername());
+            Player roommatePlayer = Bukkit.getPlayer(roommate.getUsername());
 
-        if(player == null || !player.isOnline() || roommatePlayer == null || !roommatePlayer.isOnline()) {
-            return;
+            if(player == null || !player.isOnline() || roommatePlayer == null || !roommatePlayer.isOnline()) {
+                return;
+            }
+
+            player.showPlayer(plugin, roommatePlayer);
         }
-
-        player.showPlayer(plugin, roommatePlayer);
     }
 }
