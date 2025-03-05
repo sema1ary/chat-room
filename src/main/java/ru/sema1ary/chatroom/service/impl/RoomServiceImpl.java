@@ -119,6 +119,9 @@ public class RoomServiceImpl implements RoomService {
             return;
         }
 
+        userService.showPlayer(user, roommate);
+        userService.showPlayer(roommate, user);
+
         startRoom(availableRooms.get(0), List.of(user, roommate));
     }
 
@@ -152,6 +155,7 @@ public class RoomServiceImpl implements RoomService {
 
             hubService.teleportToHub(user);
 
+            userService.hidePlayers(user);
             userService.sendMessage(user, "skip-successful");
             findRoom(user);
         });
@@ -167,6 +171,7 @@ public class RoomServiceImpl implements RoomService {
             roomUser.setInRoom(null);
             userService.save(roomUser);
 
+            userService.hidePlayers(user);
             hubService.teleportToHub(roomUser);
 
             if(!user.getUsername().equals(roomUser.getUsername())) {

@@ -40,4 +40,8 @@ public interface RoomUserService extends Service {
     void sendMessage(RoomUser user, String index);
 
     void sendTitle(RoomUser user, String title, String subtitle, Sound sound);
+
+    void hidePlayers(RoomUser user);
+
+    void showPlayer(RoomUser user, RoomUser roommate);
 }

@@ -79,7 +79,6 @@ public class ChatRoomCommand {
         userService.sendMessage(userService.getUser(sender.getName()), "hub-successful-set");
     }
 
-    @Async
     @Execute(name = "start")
     @Permission("chatroom.start")
     void start(@Context Player sender) {
@@ -87,7 +86,6 @@ public class ChatRoomCommand {
         roomService.findRoom(user);
     }
 
-    @Async
     @Execute(name = "skip")
     @Permission("chatroom.skip")
     void skip(@Context Player sender) {
@@ -102,7 +100,6 @@ public class ChatRoomCommand {
         roomService.stopRoom(room);
     }
 
-    @Async
     @Execute(name = "stop")
     @Permission("chatroom.stop")
     void stop(@Context Player sender) {
