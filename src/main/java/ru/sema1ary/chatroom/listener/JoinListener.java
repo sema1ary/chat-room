@@ -9,10 +9,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import ru.sema1ary.chatroom.ChatRoom;
 import ru.vidoskim.bukkit.service.ConfigurationService;
 
 @RequiredArgsConstructor
 public class JoinListener implements Listener {
+    private final ChatRoom plugin;
     private final MiniMessage miniMessage;
     private final ConfigurationService configurationService;
 
@@ -34,6 +36,11 @@ public class JoinListener implements Listener {
 
             team.addEntry(player.getName());
             team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+
+            Bukkit.getOnlinePlayers().forEach(onlinePlayer -> {
+                player.hidePlayer(plugin, onlinePlayer);
+                onlinePlayer.hidePlayer(plugin, player);
+            });
         }
     }
 }

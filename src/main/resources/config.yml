@@ -57,7 +57,7 @@ configuration:
   stop-queue-title-2: '<gray>Приходи еще!'
 
   should-hide-player-nicks: true
-  playerlist-name: '<gray>Незнакомец'
+  playerlist-name: '<gray>Вы'
 
   enable-flower-give: true # Разрешено ли игрокам дарить друг другу цветы
   flowers-list:
