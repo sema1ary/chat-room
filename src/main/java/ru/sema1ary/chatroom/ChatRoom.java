@@ -120,7 +120,7 @@ public final class ChatRoom extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new FlowerListener(miniMessage,
                 ServiceManager.getService(MessagesService.class),
                 ServiceManager.getService(ConfigurationService.class)), this);
-        getServer().getPluginManager().registerEvents(new JoinListener(miniMessage,
+        getServer().getPluginManager().registerEvents(new JoinListener(this, miniMessage,
                 ServiceManager.getService(ConfigurationService.class)), this);
     }
 
