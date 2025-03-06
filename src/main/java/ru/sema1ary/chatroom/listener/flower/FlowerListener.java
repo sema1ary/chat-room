@@ -14,24 +14,21 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import ru.vidoskim.bukkit.item.builder.ItemBuilder;
-import ru.vidoskim.bukkit.service.ConfigurationService;
-import ru.vidoskim.bukkit.service.MessagesService;
+import ru.vidoskim.bukkit.service.ConfigService;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class FlowerListener implements Listener {
     private final MiniMessage miniMessage;
-    private final MessagesService messagesService;
-    private final ConfigurationService configurationService;
+    private final ConfigService configService;
 
     private final List<String> flowers;
 
-    public FlowerListener(MiniMessage miniMessage, MessagesService messagesService, ConfigurationService configurationService) {
+    public FlowerListener(MiniMessage miniMessage, ConfigService configService) {
         this.miniMessage = miniMessage;
-        this.messagesService = messagesService;
-        this.configurationService = configurationService;
-        flowers = configurationService.get("flowers-list");
+        this.configService = configService;
+        flowers = configService.get("flowers-list");
     }
 
     @EventHandler
@@ -59,7 +56,7 @@ public class FlowerListener implements Listener {
             eventPlayer.getInventory().addItem(ItemBuilder.newBuilder(
                     clickedBlock.getType()).build());
 
-            player.sendMessage(miniMessage.deserialize(messagesService.getMessage("flower-pickup")));
+            player.sendMessage(miniMessage.deserialize(configService.get("flower-pickup")));
             event.setCancelled(true);
         });
 
@@ -81,7 +78,7 @@ public class FlowerListener implements Listener {
 
             if(rightClickedPlayer.getInventory().contains(itemInMainHand.getType())) {
                 eventPlayer.sendMessage(miniMessage.deserialize(
-                        messagesService.getMessage("flower-target-already-have-flower")));
+                        configService.get("flower-target-already-have-flower")));
                 return;
             }
 
@@ -89,8 +86,8 @@ public class FlowerListener implements Listener {
                     .build());
             player.getInventory().setItemInMainHand(null);
 
-            player.sendMessage(miniMessage.deserialize(messagesService.getMessage("flower-gift")));
-            rightClickedPlayer.sendMessage(miniMessage.deserialize(messagesService.getMessage("flower-gift-target")));
+            player.sendMessage(miniMessage.deserialize(configService.get("flower-gift")));
+            rightClickedPlayer.sendMessage(miniMessage.deserialize(configService.get("flower-gift-target")));
         });
     }
 
@@ -105,7 +102,7 @@ public class FlowerListener implements Listener {
     }
 
     private void handleEvent(Player player, Consumer<Player> consumer) {
-        if(configurationService.get("enable-flower-give")) {
+        if(configService.get("enable-flower-give")) {
             consumer.accept(player);
         }
     }

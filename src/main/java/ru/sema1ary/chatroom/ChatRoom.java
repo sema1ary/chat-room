@@ -23,10 +23,8 @@ import ru.sema1ary.chatroom.service.impl.HubServiceImpl;
 import ru.sema1ary.chatroom.service.impl.RoomServiceImpl;
 import ru.sema1ary.chatroom.service.impl.RoomUserServiceImpl;
 import ru.sema1ary.chatroom.util.LiteCommandUtil;
-import ru.vidoskim.bukkit.service.ConfigurationService;
-import ru.vidoskim.bukkit.service.MessagesService;
-import ru.vidoskim.bukkit.service.impl.ConfigurationServiceImpl;
-import ru.vidoskim.bukkit.service.impl.MessagesServiceImpl;
+import ru.vidoskim.bukkit.service.ConfigService;
+import ru.vidoskim.bukkit.service.impl.ConfigServiceImpl;
 import service.ServiceManager;
 
 import java.nio.file.Files;
@@ -51,17 +49,15 @@ public final class ChatRoom extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
-        ServiceManager.registerService(MessagesService.class, new MessagesServiceImpl(this));
-        ServiceManager.registerService(ConfigurationService.class, new ConfigurationServiceImpl(this));
+        ServiceManager.registerService(ConfigService.class, new ConfigServiceImpl(this));
 
         initConnectionSource();
 
         ServiceManager.registerService(HubService.class, new HubServiceImpl(getDao(Hub.class), this,
-                ServiceManager.getService(MessagesService.class)));
+                ServiceManager.getService(ConfigService.class)));
 
         ServiceManager.registerService(RoomUserService.class, new RoomUserServiceImpl(this, getDao( RoomUser.class),
-                miniMessage, ServiceManager.getService(MessagesService.class),
-                ServiceManager.getService(ConfigurationService.class)));
+                miniMessage, ServiceManager.getService(ConfigService.class)));
 
         ServiceManager.registerService(RoomService.class,
                 new RoomServiceImpl(getDao(Room.class),
@@ -87,13 +83,13 @@ public final class ChatRoom extends JavaPlugin {
 
     @SneakyThrows
     private void initConnectionSource() {
-        if(ServiceManager.getService(ConfigurationService.class).get("sql-use")) {
+        if(ServiceManager.getService(ConfigService.class).get("sql-use")) {
             connectionSource = ConnectionSourceUtil.connectSQLDatabase(
-                    ServiceManager.getService(ConfigurationService.class).get("sql-driver"),
-                    ServiceManager.getService(ConfigurationService.class).get("sql-host"),
-                    ServiceManager.getService(ConfigurationService.class).get("sql-database"),
-                    ServiceManager.getService(ConfigurationService.class).get("sql-user"),
-                    ServiceManager.getService(ConfigurationService.class).get("sql-password"),
+                    ServiceManager.getService(ConfigService.class).get("sql-driver"),
+                    ServiceManager.getService(ConfigService.class).get("sql-host"),
+                    ServiceManager.getService(ConfigService.class).get("sql-database"),
+                    ServiceManager.getService(ConfigService.class).get("sql-user"),
+                    ServiceManager.getService(ConfigService.class).get("sql-password"),
                     Room.class, RoomUser.class, Hub.class);
             return;
         }
@@ -116,27 +112,25 @@ public final class ChatRoom extends JavaPlugin {
                 ServiceManager.getService(RoomUserService.class)), this);
         getServer().getPluginManager().registerEvents(new ChatListener(miniMessage,
                 ServiceManager.getService(RoomUserService.class),
-                ServiceManager.getService(MessagesService.class)), this);
+                ServiceManager.getService(ConfigService.class)), this);
         getServer().getPluginManager().registerEvents(new FlowerListener(miniMessage,
-                ServiceManager.getService(MessagesService.class),
-                ServiceManager.getService(ConfigurationService.class)), this);
+                ServiceManager.getService(ConfigService.class)), this);
         getServer().getPluginManager().registerEvents(new JoinListener(this, miniMessage,
-                ServiceManager.getService(ConfigurationService.class)), this);
+                ServiceManager.getService(ConfigService.class)), this);
     }
 
     private void registerCommand() {
         new LiteCommandUtil(ServiceManager.getService(RoomService.class))
-                .create(ServiceManager.getService(MessagesService.class).getMessage("commands-prefix"),
-                ServiceManager.getService(MessagesService.class).getMessage("commands-invalid-usage"),
-                ServiceManager.getService(MessagesService.class).getMessage("commands-player-only"),
-                ServiceManager.getService(MessagesService.class).getMessage("commands-player-not-found"),
+                .create(ServiceManager.getService(ConfigService.class).get("commands-prefix"),
+                ServiceManager.getService(ConfigService.class).get("commands-invalid-usage"),
+                ServiceManager.getService(ConfigService.class).get("commands-player-only"),
+                ServiceManager.getService(ConfigService.class).get("commands-player-not-found"),
 
                 new ChatRoomCommand(miniMessage,
                         ServiceManager.getService(HubService.class),
                         ServiceManager.getService(RoomService.class),
                         ServiceManager.getService(RoomUserService.class),
-                        ServiceManager.getService(MessagesService.class),
-                        ServiceManager.getService(ConfigurationService.class)
-        ));
+                        ServiceManager.getService(ConfigService.class))
+                );
     }
 }

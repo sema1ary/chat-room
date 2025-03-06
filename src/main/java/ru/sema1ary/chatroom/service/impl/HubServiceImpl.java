@@ -11,7 +11,7 @@ import ru.sema1ary.chatroom.model.Hub;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import ru.sema1ary.chatroom.service.HubService;
 import ru.sema1ary.chatroom.util.LocationUtil;
-import ru.vidoskim.bukkit.service.MessagesService;
+import ru.vidoskim.bukkit.service.ConfigService;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class HubServiceImpl implements HubService {
     private final HubDao hubDao;
     private final ChatRoom plugin;
-    private final MessagesService messagesService;
+    private final ConfigService configService;
 
     @Override
     public Hub save(@NonNull Hub hub) {
@@ -66,7 +66,7 @@ public class HubServiceImpl implements HubService {
 
         Optional<Hub> optionalHub = get();
         if(optionalHub.isEmpty()) {
-            plugin.getLogger().severe(messagesService.getMessage("hub-dont-set"));
+            plugin.getLogger().severe((String) configService.get("hub-dont-set"));
             return;
         }
 

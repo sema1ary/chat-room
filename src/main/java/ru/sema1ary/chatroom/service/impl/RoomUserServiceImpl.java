@@ -15,8 +15,7 @@ import ru.sema1ary.chatroom.model.Room;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import ru.sema1ary.chatroom.model.user.UserStatus;
 import ru.sema1ary.chatroom.service.RoomUserService;
-import ru.vidoskim.bukkit.service.ConfigurationService;
-import ru.vidoskim.bukkit.service.MessagesService;
+import ru.vidoskim.bukkit.service.ConfigService;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -26,8 +25,7 @@ public class RoomUserServiceImpl implements RoomUserService {
     private final ChatRoom plugin;
     private final RoomUserDao roomUserDao;
     private final MiniMessage miniMessage;
-    private final MessagesService messagesService;
-    private final ConfigurationService configurationService;
+    private final ConfigService configService;
 
     private final Random random = new Random();
 
@@ -165,7 +163,8 @@ public class RoomUserServiceImpl implements RoomUserService {
             return;
         }
 
-        player.sendMessage(miniMessage.deserialize(PlaceholderAPI.setPlaceholders(player, messagesService.getMessage(index))));
+        player.sendMessage(miniMessage.deserialize(PlaceholderAPI.setPlaceholders(player,
+                (String) configService.get(index))));
     }
 
     @Override
@@ -176,19 +175,19 @@ public class RoomUserServiceImpl implements RoomUserService {
             return;
         }
 
-        if(configurationService.get("enable-titles")) {
-            player.showTitle(Title.title(miniMessage.deserialize(configurationService.get(titleIndex)),
-                    miniMessage.deserialize(configurationService.get(subtitleIndex))));
+        if(configService.get("enable-titles")) {
+            player.showTitle(Title.title(miniMessage.deserialize(configService.get(titleIndex)),
+                    miniMessage.deserialize(configService.get(subtitleIndex))));
         }
 
-        if(configurationService.get("enable-titles-sound")) {
+        if(configService.get("enable-titles-sound")) {
             player.playSound(player.getLocation(), sound, 1L, 0L);
         }
     }
 
     @Override
     public void hidePlayers(RoomUser user) {
-        if(configurationService.get("should-hide-player-nicks")) {
+        if(configService.get("should-hide-player-nicks")) {
             Player player = Bukkit.getPlayer(user.getUsername());
 
             if(player == null || !player.isOnline()) {
@@ -202,7 +201,7 @@ public class RoomUserServiceImpl implements RoomUserService {
 
     @Override
     public void showPlayer(RoomUser user, RoomUser roommate) {
-        if(configurationService.get("should-hide-player-nicks")) {
+        if(configService.get("should-hide-player-nicks")) {
             Player player = Bukkit.getPlayer(user.getUsername());
             Player roommatePlayer = Bukkit.getPlayer(roommate.getUsername());
 

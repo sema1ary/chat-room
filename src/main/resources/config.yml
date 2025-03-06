@@ -1,4 +1,44 @@
-messages:
+configuration:
+  sql-driver: 'mariadb' # MariaDB, MySQL, PostgreSQL
+  sql-use: false
+  sql-host: 'localhost:3306'
+  sql-database: 'database'
+  sql-user: 'user'
+  sql-password: 'password'
+
+  enable-titles: true
+  enable-titles-sound: true
+  start-queue-title-1: '<green>Вы запустили поиск!'
+  start-queue-title-2: '<gray>Пожалуйста ожидайте...'
+
+  stop-queue-title-1: '<red>Вы прекратили поиск.'
+  stop-queue-title-2: '<gray>Приходи еще!'
+
+  should-hide-player-nicks: true
+  playerlist-name: '<gray>Незнакомец'
+
+  enable-flower-give: true # Разрешено ли игрокам дарить друг другу цветы
+  flowers-list:
+    - POTTED_DANDELION
+    - POTTED_POPPY
+    - POTTED_BLUE_ORCHID
+    - POTTED_ALLIUM
+    - POTTED_AZURE_BLUET
+    - POTTED_RED_TULIP
+    - POTTED_ORANGE_TULIP
+    - POTTED_PINK_TULIP
+    - POTTED_OXEYE_DAISY
+    - POTTED_CORNFLOWER
+    - POTTED_LILY_OF_THE_VALLEY
+    - POTTED_WITHER_ROSE
+    - POTTED_SUNFLOWER
+    - POTTED_LILAC
+
+
+  #
+  # MESSAGES
+  #
+
   commands-prefix: 'chatroom' # /prefix:chatroom command, example: prefix = "rooms" - /rooms:chatroom command
   commands-invalid-usage: '&cНеверное использование!'
   commands-player-only: '&cЭта команда только для игроков!'
@@ -39,39 +79,3 @@ messages:
   chat-format: '<dark_gray>{sender}: '
   self-chat-format: '<gray>{sender}: '
   chat-error-only-in-room: '<red>Чат доступен только в комнате.'
-
-configuration:
-  sql-driver: 'mariadb' # MariaDB, MySQL, PostgreSQL
-  sql-use: false
-  sql-host: 'localhost:3306'
-  sql-database: 'database'
-  sql-user: 'user'
-  sql-password: 'password'
-
-  enable-titles: true
-  enable-titles-sound: true
-  start-queue-title-1: '<green>Вы запустили поиск!'
-  start-queue-title-2: '<gray>Пожалуйста ожидайте...'
-
-  stop-queue-title-1: '<red>Вы прекратили поиск.'
-  stop-queue-title-2: '<gray>Приходи еще!'
-
-  should-hide-player-nicks: true
-  playerlist-name: '<gray>Незнакомец'
-
-  enable-flower-give: true # Разрешено ли игрокам дарить друг другу цветы
-  flowers-list:
-    - POTTED_DANDELION
-    - POTTED_POPPY
-    - POTTED_BLUE_ORCHID
-    - POTTED_ALLIUM
-    - POTTED_AZURE_BLUET
-    - POTTED_RED_TULIP
-    - POTTED_ORANGE_TULIP
-    - POTTED_PINK_TULIP
-    - POTTED_OXEYE_DAISY
-    - POTTED_CORNFLOWER
-    - POTTED_LILY_OF_THE_VALLEY
-    - POTTED_WITHER_ROSE
-    - POTTED_SUNFLOWER
-    - POTTED_LILAC

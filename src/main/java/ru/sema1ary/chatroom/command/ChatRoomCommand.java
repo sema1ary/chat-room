@@ -17,8 +17,7 @@ import ru.sema1ary.chatroom.service.HubService;
 import ru.sema1ary.chatroom.service.RoomService;
 import ru.sema1ary.chatroom.service.RoomUserService;
 import ru.sema1ary.chatroom.util.LocationUtil;
-import ru.vidoskim.bukkit.service.ConfigurationService;
-import ru.vidoskim.bukkit.service.MessagesService;
+import ru.vidoskim.bukkit.service.ConfigService;
 
 import java.util.Optional;
 
@@ -29,16 +28,14 @@ public class ChatRoomCommand {
     private final HubService hubService;
     private final RoomService roomService;
     private final RoomUserService userService;
-    private final MessagesService messagesService;
-    private final ConfigurationService configurationService;
+    private final ConfigService configService;
 
     @Async
     @Execute(name = "reload")
     @Permission("chatroom.reload")
     void reload(@Context CommandSender sender) {
-        messagesService.reload();
-        configurationService.reload();
-        sender.sendMessage(miniMessage.deserialize(messagesService.getMessage("successful-reload")));
+        configService.reload();
+        sender.sendMessage(miniMessage.deserialize(configService.get("successful-reload")));
     }
 
     @Async

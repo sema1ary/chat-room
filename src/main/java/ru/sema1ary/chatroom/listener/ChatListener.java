@@ -9,13 +9,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import ru.sema1ary.chatroom.model.user.RoomUser;
 import ru.sema1ary.chatroom.service.RoomUserService;
-import ru.vidoskim.bukkit.service.MessagesService;
+import ru.vidoskim.bukkit.service.ConfigService;
 
 @RequiredArgsConstructor
 public class ChatListener implements Listener {
     private final MiniMessage miniMessage;
     private final RoomUserService userService;
-    private final MessagesService messagesService;
+    private final ConfigService configService;
 
     @EventHandler
     private void onChat(AsyncChatEvent event) {
@@ -32,8 +32,8 @@ public class ChatListener implements Listener {
                 return;
             }
 
-            String format = messagesService.getMessage("chat-format");
-            String selfFormat = messagesService.getMessage("self-chat-format");
+            String format = configService.get("chat-format");
+            String selfFormat = configService.get("self-chat-format");
 
             playerOne.sendMessage(miniMessage.deserialize(selfFormat.replace("{sender}"
                     , "Вы")).append(event.message()));
