@@ -15,18 +15,18 @@ import ru.sema1ary.chatroom.service.RoomService;
 public class LiteCommandUtil {
     private final RoomService roomService;
 
-    public LiteCommands<CommandSender> create(String prefix, String invalidUsageMessage, String playerOnlyMessage,
-                                              String playerNotFoundMessage, Object... commands) {
+    public LiteCommands<CommandSender> create(Object... commands) {
         return LiteBukkitFactory.builder()
                 .settings(settings -> settings
-                        .fallbackPrefix(prefix)
+                        .fallbackPrefix("chatroom")
                         .nativePermissions(true)
                 )
                 .argument(Room.class, new RoomArgument(roomService))
                 .commands(commands)
-                .message(LiteBukkitMessages.INVALID_USAGE, invalidUsageMessage)
-                .message(LiteBukkitMessages.PLAYER_ONLY, playerOnlyMessage)
-                .message(LiteBukkitMessages.PLAYER_NOT_FOUND, playerNotFoundMessage)
+                .message(LiteBukkitMessages.INVALID_USAGE, "&cНеверное использование!")
+                .message(LiteBukkitMessages.PLAYER_ONLY, "&cЭта команда только для игроков!")
+                .message(LiteBukkitMessages.PLAYER_NOT_FOUND, "&cЭтот игрок не найден.")
+                .message(LiteBukkitMessages.MISSING_PERMISSIONS, "&cУ вас нет прав.")
                 .schematicGenerator(SchematicFormat.angleBrackets())
                 .build();
     }

@@ -120,12 +120,7 @@ public final class ChatRoom extends JavaPlugin {
     }
 
     private void registerCommand() {
-        new LiteCommandUtil(ServiceManager.getService(RoomService.class))
-                .create(ServiceManager.getService(ConfigService.class).get("commands-prefix"),
-                ServiceManager.getService(ConfigService.class).get("commands-invalid-usage"),
-                ServiceManager.getService(ConfigService.class).get("commands-player-only"),
-                ServiceManager.getService(ConfigService.class).get("commands-player-not-found"),
-
+        new LiteCommandUtil(ServiceManager.getService(RoomService.class)).create(
                 new ChatRoomCommand(miniMessage,
                         ServiceManager.getService(HubService.class),
                         ServiceManager.getService(RoomService.class),

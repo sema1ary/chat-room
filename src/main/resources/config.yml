@@ -34,16 +34,6 @@ configuration:
     - POTTED_SUNFLOWER
     - POTTED_LILAC
 
-
-  #
-  # MESSAGES
-  #
-
-  commands-prefix: 'chatroom' # /prefix:chatroom command, example: prefix = "rooms" - /rooms:chatroom command
-  commands-invalid-usage: '&cНеверное использование!'
-  commands-player-only: '&cЭта команда только для игроков!'
-  commands-player-not-found: '&cЭтот игрок не найден.'
-
   # Only minimessage!!! https://docs.advntr.dev/minimessage/format.html
   successful-reload: '<green>Плагин успешно перезапущен.'
 
